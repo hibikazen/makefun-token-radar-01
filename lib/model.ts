@@ -293,8 +293,7 @@ function bySlug(protocols: SnapshotProtocol[]): Map<string, SnapshotProtocol> {
 }
 
 /** The protocols the board ranks, strongest first, with ranks 1..n. */
-export function buildBoard(snapshot: Snapshot, model: ModelConstants = MODEL): BoardRow[] {
-  const comps = buildComparables(snapshot);
+export function buildBoard(snapshot: Snapshot, model: ModelConstants = MODEL, comps: Comparables = buildComparables(snapshot)): BoardRow[] {
   const index = bySlug(snapshot.protocols);
   const chosen = new Map<string, SnapshotProtocol>();
   // The watchlist is the floor: every slug, even one the snapshot no longer carries (it cannot, but
@@ -332,7 +331,9 @@ export function buildBoard(snapshot: Snapshot, model: ModelConstants = MODEL): B
     age_days: s.age,
     implied_value_usd: s.implied,
     model: {
-      base_multiple: round4(s.multiple),
+      // The base multiple keeps full precision: the page recomputes the row from it, and a rounded
+      // multiple would make the recompute differ from the board by dollars on large TVLs.
+      base_multiple: s.multiple,
       category_median: s.categoryMedian === null ? null : round4(s.categoryMedian),
       category_comps: s.categoryComps,
       global_median: round4(comps.globalMedian),
@@ -510,7 +511,7 @@ export function radarRow(row: BoardRow): RadarRow {
 /** Everything the dashboard renders, from the snapshot. */
 export function buildRadar(snapshot: Snapshot, model: ModelConstants = MODEL): { board: BoardRow[]; radar: RadarData } {
   const comps = buildComparables(snapshot);
-  const board = buildBoard(snapshot, model);
+  const board = buildBoard(snapshot, model, comps);
   const live = liveRows(snapshot);
   const early = board.filter((r) => !snapshot.watchlist.includes(r.slug)).length;
   const radar: RadarData = {

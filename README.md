@@ -18,6 +18,15 @@ The dashboard is searchable, sortable and filterable by category and chain, with
 per protocol (model breakdown plus farm plan, every step with its cost and time) and a separate
 Live token tab for the protocols that already trade.
 
+## The model
+
+`implied = TVL x multiple x growth x maturity`, where `multiple` is the protocol's category
+median mcap/TVL over the snapshot's live-token protocols, clamped to [0.01, 2.0] and shrunk
+toward the global median with weight `comps / (comps + 8)`. Growth is the seven-day TVL change
+clamped to [-60%, +120%] at half weight; maturity runs from 0.6 for a brand-new protocol to 1.0
+at three years. The dashboard's model panel states every constant, and the detail view shows
+each row's own breakdown. See `lib/model.ts` for the whole derivation.
+
 ## Run it
 
 ```sh
@@ -27,6 +36,9 @@ mkdir -p out && MAKEFUN_OUTPUT_DIR=out node main.ts --input <snapshot.json>
 That writes `out/board.json`, `out/data.js`, `out/dashboard/`, `out/screenshots/` and
 `out/dossier.json`. Open `out/dashboard/index.html` in a browser (no network needed) to see
 the board. Node 22.18 or later, standard library only, nothing to install.
+
+`screenshots/` holds three captures of this dashboard: the board, a protocol's detail view, and
+a filtered view (the RWA category).
 
 ---
 

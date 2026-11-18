@@ -297,7 +297,7 @@
         el('table', null,
           el('caption', { class: 'sub', text: 'Pre-token protocols, strongest implied value first. Select a row for its model breakdown and farm plan.' }),
           el('thead', null, el('tr', null,
-            sortHeader('implied', 'Rank'),
+            el('th', { scope: 'col', text: 'Rank' }),
             sortHeader('name', 'Protocol'),
             sortHeader('tvl', 'TVL'),
             sortHeader('growth', '7d'),
@@ -373,9 +373,15 @@
     dialog.textContent = '';
     var steps = farmSteps(row);
     var recomputed = impliedOf(row, DATA.model);
-    var compNote = row.category_comps > 0
-      ? (row.category || 'Other') + ' median ' + fmtMult(row.category_median) + ' over ' + row.category_comps + ' live-token comparables, blended toward the global ' + fmtMult(DATA.global_median)
-      : 'no live-token comparables in ' + (row.category || 'this category') + ', so the global median ' + fmtMult(DATA.global_median) + ' prices it';
+    var compNote;
+    if (row.category_comps > 0) {
+      var m = DATA.model;
+      var clamped = Math.min(m.multiple_cap, Math.max(m.multiple_floor, row.category_median));
+      var clampNote = clamped !== row.category_median ? ' (clamped to ' + fmtMult(clamped) + ')' : '';
+      compNote = (row.category || 'Other') + ' median ' + fmtMult(row.category_median) + ' over ' + row.category_comps + ' live-token comparables' + clampNote + ', blended toward the global ' + fmtMult(DATA.global_median);
+    } else {
+      compNote = 'no live-token comparables in ' + (row.category || 'this category') + ', so the global median ' + fmtMult(DATA.global_median) + ' prices it';
+    }
     dialog.appendChild(el('div', { class: 'detail-head' },
       el('div', null,
         el('span', { class: 'brand-name', text: 'Rank ' + row.rank + ' of ' + DATA.board_size + (WATCH[row.slug] ? ' - watchlist' : ' - early radar') }),
@@ -431,5 +437,11 @@
   render();
   window.addEventListener('keydown', function (e) {
     if (e.key === 'Escape' && dialog.open) dialog.close();
+    // Pressing / anywhere (outside a field) jumps to the search box.
+    if (e.key === '/' && !/^(INPUT|SELECT|TEXTAREA)$/.test(document.activeElement ? document.activeElement.tagName : '')) {
+      e.preventDefault();
+      var q = document.getElementById('q');
+      if (q) q.focus();
+    }
   });
 })();

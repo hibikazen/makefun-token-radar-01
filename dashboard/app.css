@@ -84,7 +84,7 @@ a { color: var(--accent); }
 .table-wrap { overflow-x: auto; }
 table { width: 100%; border-collapse: collapse; font-size: 14px; }
 th, td { padding: var(--step-3) var(--step-3); border-bottom: 1px solid var(--border); text-align: left; vertical-align: middle; }
-th { color: var(--muted); font-size: 12px; font-weight: 500; white-space: nowrap; }
+th { color: var(--muted); font-size: 12px; font-weight: 500; white-space: nowrap; position: sticky; top: 0; background: var(--surface); z-index: 1; }
 th button { display: inline-flex; align-items: center; gap: var(--step-1); border: 0; background: none; padding: 0; color: inherit; font: inherit; }
 th button:hover { color: var(--ink); }
 tbody tr { cursor: pointer; }
@@ -102,7 +102,7 @@ tbody tr[data-selected="true"] { background: var(--accent-soft); }
 .status { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); font-size: 12px; white-space: nowrap; }
 .status::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
 .status.live::before { background: var(--positive); }
-.watch { display: inline-block; margin-left: 6px; padding: 1px 6px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); font-size: 11px; font-weight: 600; vertical-align: 1px; }
+.watch { display: inline-block; margin-left: 6px; padding: 1px 6px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); font-size: 11px; font-weight: 600; vertical-align: 1px; white-space: nowrap; }
 
 .model { margin-top: var(--step-4); padding: var(--step-5); display: grid; gap: var(--step-3); }
 .formula { font-family: var(--font-num); font-size: 13px; line-height: 1.7; color: var(--muted); overflow-wrap: anywhere; }
