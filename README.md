@@ -5,27 +5,37 @@
 [![reward](https://make.fun/badge/token-radar-01/hibikazen/makefun-token-radar-01/reward.svg)](https://make.fun/bounty/token-radar-01?utm_source=github&utm_medium=readme&utm_campaign=token-radar-01)
 
 Token Radar: a token launch radar for make.fun's `token-radar-01` bounty. It reads a sealed
-DefiLlama snapshot (758 protocols, 40 on the watchlist), ranks 200 pre-token protocols by an
-implied value, and hands in a static offline dashboard with a farm plan for every row.
+DefiLlama snapshot (758 protocols, 40 on the watchlist), ranks 197 pre-token protocols by an
+implied value, and hands in a static offline dashboard with a netted farm plan for every row.
 
-The value model is comparables, not a flat multiple: each protocol is priced at the median
-mcap/TVL of the snapshot's own live-token protocols in its category, blended toward the global
-median where a category has few comparables, then adjusted for seven-day TVL growth and for how
-long it has run with no token. No protocol name is ever special-cased, and the page recomputes
-every row from the same figures, so the screenshots, the code and the board agree.
+The value model is a fitted size curve, not a flat multiple: market cap grows with TVL to a
+power well below one across the snapshot's own traded tokens, so each protocol is priced on the
+log-log curve fitted to the 128 live-token protocols with a market cap. The curve is kept only
+because the snapshot's own blind test keeps it: leave-one-out over those 128 tokens, it predicts
+the held-out market cap with a median error of 3.40x, against 5.26x for a flat multiple and
+4.20x for a category median. Growth, age, category, chain breadth and a quadratic curve were all
+tried and rejected by the same test, so none is in the formula. No protocol name is ever
+special-cased, and the page recomputes every row from the same figures, so the screenshots, the
+code and the board agree.
+
+The board is the whole pre-token universe the snapshot can rank: all 40 watchlist protocols plus
+every other pre-token protocol that is not an exchange, a versioned pool, or a wrapped or staked
+product of an asset that trades (bridges, liquid staking and restaking, BTC and stablecoin
+wrappers). Every protocol in the snapshot is accounted for in the dashboard: 342 pre-token, 416
+live-token, 42 exchanges, 11 versioned pools and 92 wrapped or staked products set aside.
 
 The dashboard is searchable, sortable and filterable by category and chain, with a detail view
-per protocol (model breakdown plus farm plan, every step with its cost and time) and a separate
-Live token tab for the protocols that already trade.
+per protocol (model breakdown with a bootstrap uncertainty band, plus a farm plan netted to a
+farm / thin / skip verdict) and a separate Live token tab for the protocols that already trade.
 
 ## The model
 
-`implied = TVL x multiple x growth x maturity`, where `multiple` is the protocol's category
-median mcap/TVL over the snapshot's live-token protocols, clamped to [0.01, 2.0] and shrunk
-toward the global median with weight `comps / (comps + 8)`. Growth is the seven-day TVL change
-clamped to [-60%, +120%] at half weight; maturity runs from 0.6 for a brand-new protocol to 1.0
-at three years. The dashboard's model panel states every constant, and the detail view shows
-each row's own breakdown. See `lib/model.ts` for the whole derivation.
+`implied = round(exp(alpha) x TVL ^ beta)`, where `alpha` and `beta` come from an ordinary
+least-squares fit of `log(mcap)` on `log(tvl)` over the snapshot's live-token protocols with a
+market cap above zero (on this snapshot: alpha 6.9646, beta 0.5223, n = 128). Each row's band is
+the 10th-90th percentile of 200 bootstrap refits of the curve. The dashboard's model panel prints
+the whole blind test, adopted row and rejects alike, and states every constant; the detail view
+shows each row's own breakdown. See `lib/model.ts` for the whole derivation.
 
 ## Run it
 
