@@ -1,0 +1,3 @@
+# Local run output: main.ts writes it fresh on every run, and the grader
+# writes its own /output. It never ships with the entry.
+out/
