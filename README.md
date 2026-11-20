@@ -8,6 +8,8 @@ Token Radar: a token launch radar for make.fun's `token-radar-01` bounty. It rea
 DefiLlama snapshot (758 protocols, 40 on the watchlist), ranks 197 pre-token protocols by an
 implied value, and hands in a static offline dashboard with a netted farm plan for every row.
 
+**View the dashboard live:** https://hibikazen.github.io/makefun-token-radar-01/dashboard/ — no install, just open in desktop Chrome.
+
 The value model is a fitted size curve, not a flat multiple: market cap grows with TVL to a
 power well below one across the snapshot's own traded tokens, so each protocol is priced on the
 log-log curve fitted to the 128 live-token protocols with a market cap. The curve is kept only
